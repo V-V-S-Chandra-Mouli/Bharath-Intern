@@ -1,0 +1,24 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+
+url = "https://web.stanford.edu/class/archive/cs/cs109/cs109.1166/stuff/titanic.csv"
+df = pd.read_csv(url)
+df = df.drop(['Name', 'Ticket', 'Cabin', 'Embarked', 'PassengerId'], axis=1)
+df['Sex'] = df['Sex'].map({'male': 0, 'female': 1})
+df['Age'].fillna(df['Age'].median(), inplace=True)
+df['Fare'].fillna(df['Fare'].median(), inplace=True)
+df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
+X = df.drop('Survived', axis=1)
+y = df['Survived']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+classifier = DecisionTreeClassifier(random_state=42)
+classifier.fit(X_train, y_train)
+y_pred = classifier.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+print("Classification Report:")
+print(report)
